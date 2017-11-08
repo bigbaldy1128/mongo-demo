@@ -1,3 +1,5 @@
+* [官网](https://docs.mongodb.com/manual/tutorial/)
+* [安装](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-red-hat/)
 # 给数据库test添加用户
 ```sh
 use test
@@ -26,20 +28,34 @@ config={
 }
 rs.initiate(config)
 ```
-## 查看状态
-rs.status()
-## 查看配置
-rs.conf()
-## 设置允许从SECONDARY读数据
-rs.slaveOk()
+* rs.status() - 查看状态
+* rs.conf() - 查看配置
+* rs.slaveOk() - 设置允许从SECONDARY读数据
 
 # 配置分片
+![](img/1.PNG)   
+Shard1: 
 ```sh
 mongod --port 27101 --dbpath /data/db1 --logpath /data/log/db1.log --shardsvr --fork
+```
+Shard2: 
+```sh
 mongod --port 27102 --dbpath /data/db2 --logpath /data/log/db2.log --shardsvr --fork
+```
+ConfigServer1: 
+```sh
 mongod --port 27103 --dbpath /data/c1 --logpath /data/c1.log --configsvr --replSet repset --fork
+```
+ConfigServer2: 
+```sh
 mongod --port 27104 --dbpath /data/c2 --logpath /data/c2.log --configsvr --replSet repset --fork
+```
+ConfigServer3: 
+```sh
 mongod --port 27105 --dbpath /data/c3 --logpath /data/c3.log --configsvr --replSet repset --fork
+```
+初始化复制集
+```sh
 mongo --port 27103
 config={
     _id: "repset",members: [
@@ -49,11 +65,21 @@ config={
     ]
 }
 rs.initiate(config)
+```
+Router:
+```sh
 mongos --configdb repset/127.0.0.1:27103,127.0.0.1:27104,127.0.0.1:27105 --logpath /data/route.log --port 40000 --fork
+```
+配置分片算法，分片key，并启用分片设置
+```sh
 mongo --port 40000 
 sh.shardCollection('test.user',{'_id':'hashed'}) or sh.shardCollection('test.user',{'_id':1})
 sh.enableSharding('test')
 ```
-
+# 数据备份与恢复
+## 数据备份
+mongodump -h 127.0.0.1:40000 -d test -o /data/dump
+## 数据恢复
+mongorestore -h 127.0.0.1:40000 -d test -o /data/dump/test
 # 常用命令
 * db.COLLECTION_NAME.remove({}) 删除集合数据
