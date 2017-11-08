@@ -50,7 +50,10 @@ config={
 }
 rs.initiate(config)
 mongos --configdb repset/127.0.0.1:27103,127.0.0.1:27104,127.0.0.1:27105 --logpath /data/route.log --port 40000 --fork
-mongo --port 40000
-sh.shardCollection('test.user',{'_id':1})
+mongo --port 40000 
+sh.shardCollection('test.user',{'_id':'hashed'}) or sh.shardCollection('test.user',{'_id':1})
 sh.enableSharding('test')
 ```
+
+# 常用命令
+* db.COLLECTION_NAME.remove({}) 删除集合数据
