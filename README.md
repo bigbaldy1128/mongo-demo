@@ -82,4 +82,5 @@ mongodump -h 127.0.0.1:40000 -d test -o /data/dump
 ## 数据恢复
 mongorestore -h 127.0.0.1:40000 -d test -o /data/dump/test
 # 常用命令
-* db.COLLECTION_NAME.remove({}) 删除集合数据
+* db.COLLECTION_NAME.remove({}) - 删除集合数据
+* mongod --storageEngine wiredTiger - 使用wiredTiger存储引擎
