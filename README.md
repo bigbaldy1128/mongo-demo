@@ -3,7 +3,7 @@
 # 给数据库test添加用户
 ```sh
 use test
-db.createUser({user:"codesafe",pwd:"codesafe",roles[{role:"readWrite",db:"test"}]})
+db.createUser({user:"codesafe",pwd:"codesafe",roles:[{role:"readWrite",db:"test"}]})
 ```
 
 # 带有访问控制启动
