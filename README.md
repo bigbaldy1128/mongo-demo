@@ -73,9 +73,13 @@ mongos --configdb repset/127.0.0.1:27103,127.0.0.1:27104,127.0.0.1:27105 --logpa
 配置分片算法，分片key，并启用分片设置
 ```sh
 mongo --port 40000 
-sh.shardCollection('test.user',{'_id':'hashed'}) or sh.shardCollection('test.user',{'_id':1})
+sh.addShard("127.0.0.1:27101")
+sh.addShard("127.0.0.1:27102")
 sh.enableSharding('test')
+sh.shardCollection('test.user',{'_id':'hashed'}) or sh.shardCollection('test.user',{'_id':1})
 ```
+# 注意事项
+* 当分片不在一台机器上时，以上所有配置都不能使用localhost
 # 数据备份与恢复
 ## 数据备份
 mongodump -h 127.0.0.1:40000 -d test -o /data/dump
@@ -84,3 +88,10 @@ mongorestore -h 127.0.0.1:40000 -d test -o /data/dump/test
 # 常用命令
 * db.COLLECTION_NAME.remove({}) - 删除集合数据
 * mongod --storageEngine wiredTiger - 使用wiredTiger存储引擎
+* show dbs - 查看数据库列表
+* db.dropDatabase() - drop数据库
+* db.runCommand({addShard:"ip:port"}) - 添加分片,需要先输入use admin
+* db.adminCommand({movePrimary:"shard0003",to:"shard0001"}) - 移动分片
+* db.adminCommand({removeShard:"分片名"}) - 删除分片，删除前必须执行上面步骤
+* sh.addShard("shardSet1/127.0.0.1:27101") - 添加一个分片，该分片是复制集shardSet1的一部分
+* db.runCommand({listshards: 1}) - 查询分片列表

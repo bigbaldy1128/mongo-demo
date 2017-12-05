@@ -1,5 +1,6 @@
 package com.wjz.domain;
 
+import com.mysema.query.annotations.QueryEntity;
 import lombok.Data;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -11,9 +12,10 @@ import java.util.List;
 /**
  * Created by wangjinzhao on 2017/11/7.
  */
+@QueryEntity
 @Data
 @Document(collection = "users")
-public class User {
+public class  User{
     @Id
     private ObjectId id;
     private String name;

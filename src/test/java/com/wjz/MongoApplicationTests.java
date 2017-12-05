@@ -1,25 +1,19 @@
 package com.wjz;
 
-import com.wjz.domain.Role;
-import com.wjz.domain.RoleRepository;
-import com.wjz.domain.User;
-import com.wjz.domain.UserRepository;
-import org.bson.types.ObjectId;
+import com.wjz.domain.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Repository;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -79,8 +73,23 @@ public class MongoApplicationTests {
 
     @Test
     public void test21() {
-        List<User> users = userRepository.findByName("name55");
+        List<User> users = userRepository.findByName("王五5");
         users.forEach(System.out::println);
+    }
+
+    @Test
+    public void test22(){
+        List<User> users = userRepository.customFindByName("王五5");
+        users.forEach(System.out::println);
+    }
+
+    @Test
+    public void test23(){
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("pkTask").is(7)),
+                Aggregation.group("rule_name").count().as("total"),
+                Aggregation.project("total").and("rule_name").previousOperation());
+        List<GroupVO> groupVOS= mongoTemplate.aggregate(agg, "bug1", GroupVO.class).getMappedResults();
     }
 
 }

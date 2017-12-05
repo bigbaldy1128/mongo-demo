@@ -2,6 +2,8 @@ package com.wjz.domain;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import java.util.List;
 
@@ -10,4 +12,7 @@ import java.util.List;
  */
 public interface UserRepository extends MongoRepository<User,ObjectId> {
     List<User> findByName(String name);
+
+    @Query("{'name':?0}")
+    List<User> customFindByName(String name);
 }
