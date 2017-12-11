@@ -78,6 +78,10 @@ sh.addShard("127.0.0.1:27102")
 sh.enableSharding('test')
 sh.shardCollection('test.user',{'_id':'hashed'}) or sh.shardCollection('test.user',{'_id':1})
 ```
+# GridFS
+* db.fs.files.find() - 查看元数据
+* db.fs.chunks.find() - 查看具体文件数据
+* sh.shardCollection('test.fs.chunks',{'files_id':'hashed'}) - 添加分片键
 # 注意事项
 * 当分片不在一台机器上时，以上所有配置都不能使用localhost
 # 数据备份与恢复

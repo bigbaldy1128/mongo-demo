@@ -1,5 +1,8 @@
 package com.wjz;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.gridfs.GridFSDBFile;
 import com.wjz.domain.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,8 +12,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,18 +34,21 @@ public class MongoApplicationTests {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
+
     @Test
-    public void performanceTest(){
-        long start= System.currentTimeMillis();
-        List<User> users=new ArrayList<>();
+    public void performanceTest() {
+        long start = System.currentTimeMillis();
+        List<User> users = new ArrayList<>();
         for (long i = 1; i <= 100; i++) {
             User user = new User();
             user.setName("王五" + i);
             users.add(user);
         }
         userRepository.save(users);
-        long end= System.currentTimeMillis();
-        System.out.println(end-start);
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
     }
 
     @Test
@@ -62,7 +71,7 @@ public class MongoApplicationTests {
 
     @Test
     public void test11() {
-        List<User> users= userRepository.findAll();
+        List<User> users = userRepository.findAll();
     }
 
     @Test
@@ -78,18 +87,27 @@ public class MongoApplicationTests {
     }
 
     @Test
-    public void test22(){
+    public void test22() {
         List<User> users = userRepository.customFindByName("王五5");
         users.forEach(System.out::println);
     }
 
     @Test
-    public void test23(){
+    public void test23() {
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.match(Criteria.where("pkTask").is(7)),
                 Aggregation.group("rule_name").count().as("total"),
                 Aggregation.project("total").and("rule_name").previousOperation());
-        List<GroupVO> groupVOS= mongoTemplate.aggregate(agg, "bug1", GroupVO.class).getMappedResults();
+        List<GroupVO> groupVOS = mongoTemplate.aggregate(agg, "bug1", GroupVO.class).getMappedResults();
+    }
+
+    @Test
+    public void test31() throws FileNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream("D:\\AndroidManifest.xml");
+        DBObject metaData = new BasicDBObject();
+        metaData.put("fileName", "AndroidManifest.xml");
+        Object id = gridFsTemplate.store(fileInputStream, metaData).getId();
+        List<GridFSDBFile> fileList = gridFsTemplate.find(new Query(Criteria.where("_id").is(id)));
     }
 
 }
